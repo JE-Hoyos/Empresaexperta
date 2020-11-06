@@ -1,0 +1,1335 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/nouislider.min.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title>Ganadería Experta 4.0</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/proj4.js"></script>
+        <script src="js/proj4leaflet.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="js/tailDT.js"></script>
+<script src="js/nouislider.min.js"></script>
+<script src="js/wNumb.js"></script>
+        <script src="data/Tiposuelos_4.js"></script>
+        <script src="data/Municipiosysubregiones_9.js"></script>
+        <script src="data/verdedas_10.js"></script>
+        <script src="data/Predios_11.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#0cff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#0cff00',
+                fillOpacity: 1
+              });
+            }
+            highlightLayer.openPopup();
+        }
+        var crs = new L.Proj.CRS('EPSG:3116', '+proj=tmerc +lat_0=4.59620041666667 +lon_0=-74.0775079166667 +k=1 +x_0=1000000 +y_0=1000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', {
+            resolutions: [2800, 1400, 700, 350, 175, 84, 42, 21, 11.2, 5.6, 2.8, 1.4, 0.7, 0.35, 0.14, 0.07],
+        });
+        var map = L.map('map', {
+            crs: crs,
+            continuousWorld: false,
+            worldCopyJump: false, 
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[6.414267027963739,-75.60777656313465],[6.4904215721119,-75.50923017459802]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_GoogleRoad_0');
+        map.getPane('pane_GoogleRoad_0').style.zIndex = 400;
+        var layer_GoogleRoad_0 = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleRoad_0',
+            opacity: 1.0,
+            attribution: '<a href="https://www.google.at/permissions/geoguidelines/attr-guide.html">Map data ©2015 Google</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_GoogleRoad_0;
+        map.createPane('pane_GoogleTraffic_1');
+        map.getPane('pane_GoogleTraffic_1').style.zIndex = 401;
+        var layer_GoogleTraffic_1 = L.tileLayer('https://mt1.google.com/vt?lyrs=h@159000000,traffic|seconds_into_week:-1&style=3&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleTraffic_1',
+            opacity: 1.0,
+            attribution: '<a href="https://www.google.at/permissions/geoguidelines/attr-guide.html">Map data ©2015 Google</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_GoogleTraffic_1;
+        map.createPane('pane_GoogleTerrain_2');
+        map.getPane('pane_GoogleTerrain_2').style.zIndex = 402;
+        var layer_GoogleTerrain_2 = L.tileLayer('https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleTerrain_2',
+            opacity: 1.0,
+            attribution: '<a href="https://www.google.at/permissions/geoguidelines/attr-guide.html">Map data ©2015 Google</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_GoogleTerrain_2;
+        map.addLayer(layer_GoogleTerrain_2);
+        map.createPane('pane_GoogleSatellite_3');
+        map.getPane('pane_GoogleSatellite_3').style.zIndex = 403;
+        var layer_GoogleSatellite_3 = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleSatellite_3',
+            opacity: 1.0,
+            attribution: '<a href="https://www.google.at/permissions/geoguidelines/attr-guide.html">Map data ©2015 Google</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_GoogleSatellite_3;
+        function pop_Tiposuelos_4(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2"><strong>PAISAJE</strong><br />' + (feature.properties['PAISAJE'] !== null ? autolinker.link(feature.properties['PAISAJE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>CLIMA</strong><br />' + (feature.properties['CLIMA'] !== null ? autolinker.link(feature.properties['CLIMA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>RELIEVE</strong><br />' + (feature.properties['RELIEVE'] !== null ? autolinker.link(feature.properties['RELIEVE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>LITOLOGÍA</strong><br />' + (feature.properties['LITOLOGÍA'] !== null ? autolinker.link(feature.properties['LITOLOGÍA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>CARACTERIS</strong><br />' + (feature.properties['CARACTERIS'] !== null ? autolinker.link(feature.properties['CARACTERIS'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Tiposuelos_4_0(feature) {
+            switch(String(feature.properties['PAISAJE'])) {
+                case 'Altiplanicie':
+                    return {
+                pane: 'pane_Tiposuelos_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(166,97,26,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Cuerpo de agua':
+                    return {
+                pane: 'pane_Tiposuelos_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(192,140,70,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Lomerío':
+                    return {
+                pane: 'pane_Tiposuelos_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(217,183,114,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Misceláneo rocoso':
+                    return {
+                pane: 'pane_Tiposuelos_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(231,211,165,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Montaña':
+                    return {
+                pane: 'pane_Tiposuelos_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(241,234,219,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Piedemonte':
+                    return {
+                pane: 'pane_Tiposuelos_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(219,237,234,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Planicie aluvial':
+                    return {
+                pane: 'pane_Tiposuelos_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(167,219,211,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Valle aluvial':
+                    return {
+                pane: 'pane_Tiposuelos_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(114,197,184,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Zona urbana':
+                    return {
+                pane: 'pane_Tiposuelos_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(57,165,149,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_Tiposuelos_4');
+        map.getPane('pane_Tiposuelos_4').style.zIndex = 404;
+        map.getPane('pane_Tiposuelos_4').style['mix-blend-mode'] = 'normal';
+        var layer_Tiposuelos_4 = new L.geoJson(json_Tiposuelos_4, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Tiposuelos_4',
+            layerName: 'layer_Tiposuelos_4',
+            pane: 'pane_Tiposuelos_4',
+            onEachFeature: pop_Tiposuelos_4,
+            style: style_Tiposuelos_4_0,
+        });
+        bounds_group.addLayer(layer_Tiposuelos_4);
+        map.createPane('pane_NDMI_NorteC_5');
+        map.getPane('pane_NDMI_NorteC_5').style.zIndex = 405;
+        var img_NDMI_NorteC_5 = 'data/NDMI_NorteC_5.png';
+        var img_bounds_NDMI_NorteC_5 = [[6.3778588541917784,-75.76166527443014],[7.242487315156818,-75.19662496071896]];
+        var layer_NDMI_NorteC_5 = new L.imageOverlay(img_NDMI_NorteC_5,
+                                              img_bounds_NDMI_NorteC_5,
+                                              {pane: 'pane_NDMI_NorteC_5'});
+        bounds_group.addLayer(layer_NDMI_NorteC_5);
+        map.createPane('pane_NDVI_NorteC_6');
+        map.getPane('pane_NDVI_NorteC_6').style.zIndex = 406;
+        var img_NDVI_NorteC_6 = 'data/NDVI_NorteC_6.png';
+        var img_bounds_NDVI_NorteC_6 = [[6.3778588541917784,-75.76166527443014],[7.242487315156818,-75.19662496071896]];
+        var layer_NDVI_NorteC_6 = new L.imageOverlay(img_NDVI_NorteC_6,
+                                              img_bounds_NDVI_NorteC_6,
+                                              {pane: 'pane_NDVI_NorteC_6'});
+        bounds_group.addLayer(layer_NDVI_NorteC_6);
+        map.addLayer(layer_NDVI_NorteC_6);
+        map.createPane('pane_Pluviosidad_7');
+        map.getPane('pane_Pluviosidad_7').style.zIndex = 407;
+        var img_Pluviosidad_7 = 'data/Pluviosidad_7.png';
+        var img_bounds_Pluviosidad_7 = [[5.988169684,-77.123960403],[7.548543332,-74.062501915]];
+        var layer_Pluviosidad_7 = new L.imageOverlay(img_Pluviosidad_7,
+                                              img_bounds_Pluviosidad_7,
+                                              {pane: 'pane_Pluviosidad_7'});
+        bounds_group.addLayer(layer_Pluviosidad_7);
+        map.createPane('pane_CO2_8');
+        map.getPane('pane_CO2_8').style.zIndex = 408;
+        var img_CO2_8 = 'data/CO2_8.png';
+        var img_bounds_CO2_8 = [[5.988169684,-77.123960403],[7.548543332,-74.062501915]];
+        var layer_CO2_8 = new L.imageOverlay(img_CO2_8,
+                                              img_bounds_CO2_8,
+                                              {pane: 'pane_CO2_8'});
+        bounds_group.addLayer(layer_CO2_8);
+        function pop_Municipiosysubregiones_9(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2"><strong>ID</strong><br />' + (feature.properties['ID'] !== null ? autolinker.link(feature.properties['ID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>Municipio</strong><br />' + (feature.properties['Municipio'] !== null ? autolinker.link(feature.properties['Municipio'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>Subregión</strong><br />' + (feature.properties['Subregión'] !== null ? autolinker.link(feature.properties['Subregión'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>Área (ha)</strong><br />' + (feature.properties['Área (ha)'] !== null ? autolinker.link(feature.properties['Área (ha)'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>A_pas</strong><br />' + (feature.properties['A_pas'] !== null ? autolinker.link(feature.properties['A_pas'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>A_ras</strong><br />' + (feature.properties['A_ras'] !== null ? autolinker.link(feature.properties['A_ras'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>A_pr</strong><br />' + (feature.properties['A_pr'] !== null ? autolinker.link(feature.properties['A_pr'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>TF</strong><br />' + (feature.properties['TF'] !== null ? autolinker.link(feature.properties['TF'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>TB</strong><br />' + (feature.properties['TB'] !== null ? autolinker.link(feature.properties['TB'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>BL</strong><br />' + (feature.properties['BL'] !== null ? autolinker.link(feature.properties['BL'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>BC</strong><br />' + (feature.properties['BC'] !== null ? autolinker.link(feature.properties['BC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>BDP</strong><br />' + (feature.properties['BDP'] !== null ? autolinker.link(feature.properties['BDP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Municipiosysubregiones_9_0(feature) {
+            switch(String(feature.properties['Subregión'])) {
+                case 'BAJO CAUCA':
+                    return {
+                pane: 'pane_Municipiosysubregiones_9',
+                opacity: 1,
+                color: 'rgba(217,72,79,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'MAGDALENA MEDIO':
+                    return {
+                pane: 'pane_Municipiosysubregiones_9',
+                opacity: 1,
+                color: 'rgba(191,212,73,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'NORDESTE':
+                    return {
+                pane: 'pane_Municipiosysubregiones_9',
+                opacity: 1,
+                color: 'rgba(121,209,94,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'NORTE':
+                    return {
+                pane: 'pane_Municipiosysubregiones_9',
+                opacity: 1,
+                color: 'rgba(41,122,226,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'OCCIDENTE':
+                    return {
+                pane: 'pane_Municipiosysubregiones_9',
+                opacity: 1,
+                color: 'rgba(231,179,114,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'ORIENTE':
+                    return {
+                pane: 'pane_Municipiosysubregiones_9',
+                opacity: 1,
+                color: 'rgba(218,18,148,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'SUROESTE':
+                    return {
+                pane: 'pane_Municipiosysubregiones_9',
+                opacity: 1,
+                color: 'rgba(54,231,225,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'URABA':
+                    return {
+                pane: 'pane_Municipiosysubregiones_9',
+                opacity: 1,
+                color: 'rgba(204,99,239,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'VALLE DE ABURRA':
+                    return {
+                pane: 'pane_Municipiosysubregiones_9',
+                opacity: 1,
+                color: 'rgba(140,122,226,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_Municipiosysubregiones_9');
+        map.getPane('pane_Municipiosysubregiones_9').style.zIndex = 409;
+        map.getPane('pane_Municipiosysubregiones_9').style['mix-blend-mode'] = 'normal';
+        var layer_Municipiosysubregiones_9 = new L.geoJson(json_Municipiosysubregiones_9, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Municipiosysubregiones_9',
+            layerName: 'layer_Municipiosysubregiones_9',
+            pane: 'pane_Municipiosysubregiones_9',
+            onEachFeature: pop_Municipiosysubregiones_9,
+            style: style_Municipiosysubregiones_9_0,
+        });
+        bounds_group.addLayer(layer_Municipiosysubregiones_9);
+        map.addLayer(layer_Municipiosysubregiones_9);
+        function pop_verdedas_10(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2"><strong>Vereda</strong><br />' + (feature.properties['Vereda'] !== null ? autolinker.link(feature.properties['Vereda'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>Area (ha)</strong><br />' + (feature.properties['Area (ha)'] !== null ? autolinker.link(feature.properties['Area (ha)'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_verdedas_10_0() {
+            return {
+                pane: 'pane_verdedas_10',
+                opacity: 1,
+                color: 'rgba(228,26,28,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_verdedas_10');
+        map.getPane('pane_verdedas_10').style.zIndex = 410;
+        map.getPane('pane_verdedas_10').style['mix-blend-mode'] = 'normal';
+        var layer_verdedas_10 = new L.geoJson(json_verdedas_10, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_verdedas_10',
+            layerName: 'layer_verdedas_10',
+            pane: 'pane_verdedas_10',
+            onEachFeature: pop_verdedas_10,
+            style: style_verdedas_10_0,
+        });
+        bounds_group.addLayer(layer_verdedas_10);
+        map.addLayer(layer_verdedas_10);
+        function pop_Predios_11(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2"><strong>PK_PREDIOS</strong><br />' + (feature.properties['PK_PREDIOS'] !== null ? autolinker.link(feature.properties['PK_PREDIOS'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>Asociado</strong><br />' + (feature.properties['Asociado'] !== null ? autolinker.link(feature.properties['Asociado'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>Productor</strong><br />' + (feature.properties['Productor'] !== null ? autolinker.link(feature.properties['Productor'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>L / día</strong><br />' + (feature.properties['L / día'] !== null ? autolinker.link(feature.properties['L / día'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>Proteína</strong><br />' + (feature.properties['Proteína'] !== null ? autolinker.link(feature.properties['Proteína'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>Grasa</strong><br />' + (feature.properties['Grasa'] !== null ? autolinker.link(feature.properties['Grasa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>UFC</strong><br />' + (feature.properties['UFC'] !== null ? autolinker.link(feature.properties['UFC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Predios_11_0(feature) {
+            switch(String(feature.properties['Asociado'])) {
+                case 'Colanta':
+                    return {
+                pane: 'pane_Predios_11',
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(195,62,239,1.0)',
+                interactive: true,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_Predios_11',
+                opacity: 1,
+                color: 'rgba(53,121,177,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_Predios_11');
+        map.getPane('pane_Predios_11').style.zIndex = 411;
+        map.getPane('pane_Predios_11').style['mix-blend-mode'] = 'normal';
+        var layer_Predios_11 = new L.geoJson(json_Predios_11, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Predios_11',
+            layerName: 'layer_Predios_11',
+            pane: 'pane_Predios_11',
+            onEachFeature: pop_Predios_11,
+            style: style_Predios_11_0,
+        });
+        bounds_group.addLayer(layer_Predios_11);
+        map.addLayer(layer_Predios_11);
+            var title = new L.Control();
+            title.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info');
+                this.update();
+                return this._div;
+            };
+            title.update = function () {
+                this._div.innerHTML = '<h2>Ganadería Experta 4.0</h2>';
+            };
+            title.addTo(map);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'Predios<br /><table><tr><td style="text-align: center;"><img src="legend/Predios_11_Colanta0.png" /></td><td>Colanta</td></tr><tr><td style="text-align: center;"><img src="legend/Predios_11_1.png" /></td><td></td></tr></table>': layer_Predios_11,'<img src="legend/verdedas_10.png" /> verdedas': layer_verdedas_10,'Municipios y subregiones<br /><table><tr><td style="text-align: center;"><img src="legend/Municipiosysubregiones_9_BAJOCAUCA0.png" /></td><td>BAJO CAUCA</td></tr><tr><td style="text-align: center;"><img src="legend/Municipiosysubregiones_9_MAGDALENAMEDIO1.png" /></td><td>MAGDALENA MEDIO</td></tr><tr><td style="text-align: center;"><img src="legend/Municipiosysubregiones_9_NORDESTE2.png" /></td><td>NORDESTE</td></tr><tr><td style="text-align: center;"><img src="legend/Municipiosysubregiones_9_NORTE3.png" /></td><td>NORTE</td></tr><tr><td style="text-align: center;"><img src="legend/Municipiosysubregiones_9_OCCIDENTE4.png" /></td><td>OCCIDENTE</td></tr><tr><td style="text-align: center;"><img src="legend/Municipiosysubregiones_9_ORIENTE5.png" /></td><td>ORIENTE</td></tr><tr><td style="text-align: center;"><img src="legend/Municipiosysubregiones_9_SUROESTE6.png" /></td><td>SUROESTE</td></tr><tr><td style="text-align: center;"><img src="legend/Municipiosysubregiones_9_URABA7.png" /></td><td>URABA</td></tr><tr><td style="text-align: center;"><img src="legend/Municipiosysubregiones_9_VALLEDEABURRA8.png" /></td><td>VALLE DE ABURRA</td></tr></table>': layer_Municipiosysubregiones_9,"CO2": layer_CO2_8,"Pluviosidad": layer_Pluviosidad_7,"NDVI_NorteC": layer_NDVI_NorteC_6,"NDMI_NorteC": layer_NDMI_NorteC_5,'Tipo suelos<br /><table><tr><td style="text-align: center;"><img src="legend/Tiposuelos_4_Altiplanicie0.png" /></td><td>Altiplanicie</td></tr><tr><td style="text-align: center;"><img src="legend/Tiposuelos_4_Cuerpodeagua1.png" /></td><td>Cuerpo de agua</td></tr><tr><td style="text-align: center;"><img src="legend/Tiposuelos_4_Lomerío2.png" /></td><td>Lomerío</td></tr><tr><td style="text-align: center;"><img src="legend/Tiposuelos_4_Misceláneorocoso3.png" /></td><td>Misceláneo rocoso</td></tr><tr><td style="text-align: center;"><img src="legend/Tiposuelos_4_Montaña4.png" /></td><td>Montaña</td></tr><tr><td style="text-align: center;"><img src="legend/Tiposuelos_4_Piedemonte5.png" /></td><td>Piedemonte</td></tr><tr><td style="text-align: center;"><img src="legend/Tiposuelos_4_Planiciealuvial6.png" /></td><td>Planicie aluvial</td></tr><tr><td style="text-align: center;"><img src="legend/Tiposuelos_4_Vallealuvial7.png" /></td><td>Valle aluvial</td></tr><tr><td style="text-align: center;"><img src="legend/Tiposuelos_4_Zonaurbana8.png" /></td><td>Zona urbana</td></tr></table>': layer_Tiposuelos_4,"Google Satellite": layer_GoogleSatellite_3,"Google Terrain": layer_GoogleTerrain_2,"Google Traffic": layer_GoogleTraffic_1,"Google Road": layer_GoogleRoad_0,}).addTo(map);
+        setBounds();
+        map.addControl(new L.Control.Search({
+            layer: layer_verdedas_10,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'Vereda'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "80%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"Municipio": "str","Vereda": "str","Asociado": "str"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Municipio = document.createElement('div');
+            div_Municipio.id = "div_Municipio";
+            div_Municipio.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Municipio);
+            sel_Municipio = document.createElement('select');
+            sel_Municipio.multiple = true;
+            sel_Municipio.size = 10;
+            sel_Municipio.id = "sel_Municipio";
+            var Municipio_options_str = "<option value='' unselected></option>";
+            sel_Municipio.onchange = function(){filterFunc()};
+            Municipio_options_str  += '<option value="ABEJORRAL">ABEJORRAL</option>';
+            Municipio_options_str  += '<option value="ABRIAQUI">ABRIAQUI</option>';
+            Municipio_options_str  += '<option value="ALEJANDRIA">ALEJANDRIA</option>';
+            Municipio_options_str  += '<option value="AMAGA">AMAGA</option>';
+            Municipio_options_str  += '<option value="AMALFI">AMALFI</option>';
+            Municipio_options_str  += '<option value="ANDES">ANDES</option>';
+            Municipio_options_str  += '<option value="ANGELOPOLIS">ANGELOPOLIS</option>';
+            Municipio_options_str  += '<option value="ANGOSTURA">ANGOSTURA</option>';
+            Municipio_options_str  += '<option value="ANORI">ANORI</option>';
+            Municipio_options_str  += '<option value="ANZA">ANZA</option>';
+            Municipio_options_str  += '<option value="APARTADO">APARTADO</option>';
+            Municipio_options_str  += '<option value="ARBOLETES">ARBOLETES</option>';
+            Municipio_options_str  += '<option value="ARGELIA">ARGELIA</option>';
+            Municipio_options_str  += '<option value="ARMENIA">ARMENIA</option>';
+            Municipio_options_str  += '<option value="BARBOSA">BARBOSA</option>';
+            Municipio_options_str  += '<option value="BELLO">BELLO</option>';
+            Municipio_options_str  += '<option value="BELMIRA">BELMIRA</option>';
+            Municipio_options_str  += '<option value="BETANIA">BETANIA</option>';
+            Municipio_options_str  += '<option value="BETULIA">BETULIA</option>';
+            Municipio_options_str  += '<option value="BRICENO">BRICENO</option>';
+            Municipio_options_str  += '<option value="BURITICA">BURITICA</option>';
+            Municipio_options_str  += '<option value="CACERES">CACERES</option>';
+            Municipio_options_str  += '<option value="CAICEDO">CAICEDO</option>';
+            Municipio_options_str  += '<option value="CALDAS">CALDAS</option>';
+            Municipio_options_str  += '<option value="CAMPAMENTO">CAMPAMENTO</option>';
+            Municipio_options_str  += '<option value="CANASGORDAS">CANASGORDAS</option>';
+            Municipio_options_str  += '<option value="CARACOLI">CARACOLI</option>';
+            Municipio_options_str  += '<option value="CARAMANTA">CARAMANTA</option>';
+            Municipio_options_str  += '<option value="CAREPA">CAREPA</option>';
+            Municipio_options_str  += '<option value="CAROLINA">CAROLINA</option>';
+            Municipio_options_str  += '<option value="CAUCASIA">CAUCASIA</option>';
+            Municipio_options_str  += '<option value="CHIGORODO">CHIGORODO</option>';
+            Municipio_options_str  += '<option value="CISNEROS">CISNEROS</option>';
+            Municipio_options_str  += '<option value="CIUDAD BOLIVAR">CIUDAD BOLIVAR</option>';
+            Municipio_options_str  += '<option value="COCORNA">COCORNA</option>';
+            Municipio_options_str  += '<option value="CONCEPCION">CONCEPCION</option>';
+            Municipio_options_str  += '<option value="CONCORDIA">CONCORDIA</option>';
+            Municipio_options_str  += '<option value="COPACABANA">COPACABANA</option>';
+            Municipio_options_str  += '<option value="DABEIBA">DABEIBA</option>';
+            Municipio_options_str  += '<option value="DONMATIAS">DONMATIAS</option>';
+            Municipio_options_str  += '<option value="EBEJICO">EBEJICO</option>';
+            Municipio_options_str  += '<option value="EL BAGRE">EL BAGRE</option>';
+            Municipio_options_str  += '<option value="EL CARMEN DE VIBORAL">EL CARMEN DE VIBORAL</option>';
+            Municipio_options_str  += '<option value="EL PENOL">EL PENOL</option>';
+            Municipio_options_str  += '<option value="EL RETIRO">EL RETIRO</option>';
+            Municipio_options_str  += '<option value="EL SANTUARIO">EL SANTUARIO</option>';
+            Municipio_options_str  += '<option value="ENTRERRIOS">ENTRERRIOS</option>';
+            Municipio_options_str  += '<option value="ENVIGADO">ENVIGADO</option>';
+            Municipio_options_str  += '<option value="FREDONIA">FREDONIA</option>';
+            Municipio_options_str  += '<option value="FRONTINO">FRONTINO</option>';
+            Municipio_options_str  += '<option value="GIRALDO">GIRALDO</option>';
+            Municipio_options_str  += '<option value="GIRARDOTA">GIRARDOTA</option>';
+            Municipio_options_str  += '<option value="GOMEZ PLATA">GOMEZ PLATA</option>';
+            Municipio_options_str  += '<option value="GRANADA">GRANADA</option>';
+            Municipio_options_str  += '<option value="GUADALUPE">GUADALUPE</option>';
+            Municipio_options_str  += '<option value="GUARNE">GUARNE</option>';
+            Municipio_options_str  += '<option value="GUATAPE">GUATAPE</option>';
+            Municipio_options_str  += '<option value="HELICONIA">HELICONIA</option>';
+            Municipio_options_str  += '<option value="HISPANIA">HISPANIA</option>';
+            Municipio_options_str  += '<option value="ITAGUI">ITAGUI</option>';
+            Municipio_options_str  += '<option value="ITUANGO">ITUANGO</option>';
+            Municipio_options_str  += '<option value="JARDIN">JARDIN</option>';
+            Municipio_options_str  += '<option value="JERICO">JERICO</option>';
+            Municipio_options_str  += '<option value="LA CEJA">LA CEJA</option>';
+            Municipio_options_str  += '<option value="LA ESTRELLA">LA ESTRELLA</option>';
+            Municipio_options_str  += '<option value="LA PINTADA">LA PINTADA</option>';
+            Municipio_options_str  += '<option value="LA UNION">LA UNION</option>';
+            Municipio_options_str  += '<option value="LIBORINA">LIBORINA</option>';
+            Municipio_options_str  += '<option value="MACEO">MACEO</option>';
+            Municipio_options_str  += '<option value="MARINILLA">MARINILLA</option>';
+            Municipio_options_str  += '<option value="MEDELLIN">MEDELLIN</option>';
+            Municipio_options_str  += '<option value="MONTEBELLO">MONTEBELLO</option>';
+            Municipio_options_str  += '<option value="MURINDO">MURINDO</option>';
+            Municipio_options_str  += '<option value="MUTATA">MUTATA</option>';
+            Municipio_options_str  += '<option value="NARINO">NARINO</option>';
+            Municipio_options_str  += '<option value="NECHI">NECHI</option>';
+            Municipio_options_str  += '<option value="NECOCLI">NECOCLI</option>';
+            Municipio_options_str  += '<option value="OLAYA">OLAYA</option>';
+            Municipio_options_str  += '<option value="PEQUE">PEQUE</option>';
+            Municipio_options_str  += '<option value="PUEBLORRICO">PUEBLORRICO</option>';
+            Municipio_options_str  += '<option value="PUERTO BERRIO">PUERTO BERRIO</option>';
+            Municipio_options_str  += '<option value="PUERTO NARE">PUERTO NARE</option>';
+            Municipio_options_str  += '<option value="PUERTO TRIUNFO">PUERTO TRIUNFO</option>';
+            Municipio_options_str  += '<option value="REMEDIOS">REMEDIOS</option>';
+            Municipio_options_str  += '<option value="RIONEGRO">RIONEGRO</option>';
+            Municipio_options_str  += '<option value="SABANALARGA">SABANALARGA</option>';
+            Municipio_options_str  += '<option value="SABANETA">SABANETA</option>';
+            Municipio_options_str  += '<option value="SALGAR">SALGAR</option>';
+            Municipio_options_str  += '<option value="SAN ANDRES DE CUERQUIA">SAN ANDRES DE CUERQUIA</option>';
+            Municipio_options_str  += '<option value="SAN CARLOS">SAN CARLOS</option>';
+            Municipio_options_str  += '<option value="SAN FRANCISCO">SAN FRANCISCO</option>';
+            Municipio_options_str  += '<option value="SAN JERONIMO">SAN JERONIMO</option>';
+            Municipio_options_str  += '<option value="SAN JOSE DE LA MONTANA">SAN JOSE DE LA MONTANA</option>';
+            Municipio_options_str  += '<option value="SAN JUAN DE URABA">SAN JUAN DE URABA</option>';
+            Municipio_options_str  += '<option value="SAN LUIS">SAN LUIS</option>';
+            Municipio_options_str  += '<option value="SAN PEDRO DE LOS MILAGROS">SAN PEDRO DE LOS MILAGROS</option>';
+            Municipio_options_str  += '<option value="SAN PEDRO DE URABA">SAN PEDRO DE URABA</option>';
+            Municipio_options_str  += '<option value="SAN RAFAEL">SAN RAFAEL</option>';
+            Municipio_options_str  += '<option value="SAN ROQUE">SAN ROQUE</option>';
+            Municipio_options_str  += '<option value="SAN VICENTE">SAN VICENTE</option>';
+            Municipio_options_str  += '<option value="SANTA BARBARA">SANTA BARBARA</option>';
+            Municipio_options_str  += '<option value="SANTA FE DE ANTIOQUIA">SANTA FE DE ANTIOQUIA</option>';
+            Municipio_options_str  += '<option value="SANTA ROSA DE OSOS">SANTA ROSA DE OSOS</option>';
+            Municipio_options_str  += '<option value="SANTO DOMINGO">SANTO DOMINGO</option>';
+            Municipio_options_str  += '<option value="SEGOVIA">SEGOVIA</option>';
+            Municipio_options_str  += '<option value="SONSON">SONSON</option>';
+            Municipio_options_str  += '<option value="SOPETRAN">SOPETRAN</option>';
+            Municipio_options_str  += '<option value="TAMESIS">TAMESIS</option>';
+            Municipio_options_str  += '<option value="TARAZA">TARAZA</option>';
+            Municipio_options_str  += '<option value="TARSO">TARSO</option>';
+            Municipio_options_str  += '<option value="TITIRIBI">TITIRIBI</option>';
+            Municipio_options_str  += '<option value="TOLEDO">TOLEDO</option>';
+            Municipio_options_str  += '<option value="TURBO">TURBO</option>';
+            Municipio_options_str  += '<option value="URAMITA">URAMITA</option>';
+            Municipio_options_str  += '<option value="URRAO">URRAO</option>';
+            Municipio_options_str  += '<option value="VALDIVIA">VALDIVIA</option>';
+            Municipio_options_str  += '<option value="VALPARAISO">VALPARAISO</option>';
+            Municipio_options_str  += '<option value="VEGACHI">VEGACHI</option>';
+            Municipio_options_str  += '<option value="VENECIA">VENECIA</option>';
+            Municipio_options_str  += '<option value="VIGIA DEL FUERTE">VIGIA DEL FUERTE</option>';
+            Municipio_options_str  += '<option value="YALI">YALI</option>';
+            Municipio_options_str  += '<option value="YARUMAL">YARUMAL</option>';
+            Municipio_options_str  += '<option value="YOLOMBO">YOLOMBO</option>';
+            Municipio_options_str  += '<option value="YONDO">YONDO</option>';
+            Municipio_options_str  += '<option value="ZARAGOZA">ZARAGOZA</option>';
+            sel_Municipio.innerHTML = Municipio_options_str;
+            div_Municipio.appendChild(sel_Municipio);
+            var lab_Municipio = document.createElement('div');
+            lab_Municipio.innerHTML = 'Municipio';
+            lab_Municipio.className = 'filterlabel';
+            div_Municipio.appendChild(lab_Municipio);
+            var reset_Municipio = document.createElement('div');
+            reset_Municipio.innerHTML = 'clear filter';
+            reset_Municipio.className = 'filterlabel';
+            reset_Municipio.onclick = function() {
+                var options = document.getElementById("sel_Municipio").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Municipio.appendChild(reset_Municipio);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Vereda = document.createElement('div');
+            div_Vereda.id = "div_Vereda";
+            div_Vereda.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Vereda);
+            sel_Vereda = document.createElement('select');
+            sel_Vereda.multiple = true;
+            sel_Vereda.size = 10;
+            sel_Vereda.id = "sel_Vereda";
+            var Vereda_options_str = "<option value='' unselected></option>";
+            sel_Vereda.onchange = function(){filterFunc()};
+            Vereda_options_str  += '<option value="ABEJAS">ABEJAS</option>';
+            Vereda_options_str  += '<option value="AGUACATAL">AGUACATAL</option>';
+            Vereda_options_str  += '<option value="AGUACATES">AGUACATES</option>';
+            Vereda_options_str  += '<option value="AGUADITAS">AGUADITAS</option>';
+            Vereda_options_str  += '<option value="AGUAS CLARAS ABAJO">AGUAS CLARAS ABAJO</option>';
+            Vereda_options_str  += '<option value="ALTAMIRA">ALTAMIRA</option>';
+            Vereda_options_str  += '<option value="ALTO DE MEDINA">ALTO DE MEDINA</option>';
+            Vereda_options_str  += '<option value="ALTO SECO">ALTO SECO</option>';
+            Vereda_options_str  += '<option value="ANGOSTURITA">ANGOSTURITA</option>';
+            Vereda_options_str  += '<option value="ARAGON">ARAGON</option>';
+            Vereda_options_str  += '<option value="ATEZAL">ATEZAL</option>';
+            Vereda_options_str  += '<option value="BARRANCAS">BARRANCAS</option>';
+            Vereda_options_str  += '<option value="BELLAVISTA">BELLAVISTA</option>';
+            Vereda_options_str  += '<option value="BIOGUI">BIOGUI</option>';
+            Vereda_options_str  += '<option value="BUENA VISTA">BUENA VISTA</option>';
+            Vereda_options_str  += '<option value="BUENAS AIRES PARTE ALTA">BUENAS AIRES PARTE ALTA</option>';
+            Vereda_options_str  += '<option value="BUENAS AIRES PARTE BAJA">BUENAS AIRES PARTE BAJA</option>';
+            Vereda_options_str  += '<option value="BUENAVISTA">BUENAVISTA</option>';
+            Vereda_options_str  += '<option value="CAMBURE">CAMBURE</option>';
+            Vereda_options_str  += '<option value="CARUQUIA">CARUQUIA</option>';
+            Vereda_options_str  += '<option value="CAÑADUZALES">CAÑADUZALES</option>';
+            Vereda_options_str  += '<option value="CAÑAVERAL">CAÑAVERAL</option>';
+            Vereda_options_str  += '<option value="CAÑAVERAL ARRIBA">CAÑAVERAL ARRIBA</option>';
+            Vereda_options_str  += '<option value="CEDEÑO">CEDEÑO</option>';
+            Vereda_options_str  += '<option value="CEREZALES">CEREZALES</option>';
+            Vereda_options_str  += '<option value="CESTILLAL">CESTILLAL</option>';
+            Vereda_options_str  += '<option value="CHACHAFRUTO">CHACHAFRUTO</option>';
+            Vereda_options_str  += '<option value="CHILIMACO">CHILIMACO</option>';
+            Vereda_options_str  += '<option value="CHILIMATO">CHILIMATO</option>';
+            Vereda_options_str  += '<option value="CHORROS BLANCOS">CHORROS BLANCOS</option>';
+            Vereda_options_str  += '<option value="CHORROS BLANCOS ABAJO">CHORROS BLANCOS ABAJO</option>';
+            Vereda_options_str  += '<option value="CHORROS BLANCOS ARRIBA">CHORROS BLANCOS ARRIBA</option>';
+            Vereda_options_str  += '<option value="CHORROS BLANCOS DEL MEDIO">CHORROS BLANCOS DEL MEDIO</option>';
+            Vereda_options_str  += '<option value="CLARITAS">CLARITAS</option>';
+            Vereda_options_str  += '<option value="CLAVELINO">CLAVELINO</option>';
+            Vereda_options_str  += '<option value="COLMENAS">COLMENAS</option>';
+            Vereda_options_str  += '<option value="COLÓN">COLÓN</option>';
+            Vereda_options_str  += '<option value="COMÚN COMINAL">COMÚN COMINAL</option>';
+            Vereda_options_str  += '<option value="CORCOVADO">CORCOVADO</option>';
+            Vereda_options_str  += '<option value="CRUCES">CRUCES</option>';
+            Vereda_options_str  += '<option value="CUARTAS">CUARTAS</option>';
+            Vereda_options_str  += '<option value="CUCURUCHO">CUCURUCHO</option>';
+            Vereda_options_str  += '<option value="DESPENSAS">DESPENSAS</option>';
+            Vereda_options_str  += '<option value="DOS QUEBRADAS">DOS QUEBRADAS</option>';
+            Vereda_options_str  += '<option value="EL AHITON">EL AHITON</option>';
+            Vereda_options_str  += '<option value="EL ANIME">EL ANIME</option>';
+            Vereda_options_str  += '<option value="EL BARRO">EL BARRO</option>';
+            Vereda_options_str  += '<option value="EL BOTON">EL BOTON</option>';
+            Vereda_options_str  += '<option value="EL CANEY">EL CANEY</option>';
+            Vereda_options_str  += '<option value="EL CANTARO">EL CANTARO</option>';
+            Vereda_options_str  += '<option value="EL CARIBE">EL CARIBE</option>';
+            Vereda_options_str  += '<option value="EL CEDRAL">EL CEDRAL</option>';
+            Vereda_options_str  += '<option value="EL CEDRO">EL CEDRO</option>';
+            Vereda_options_str  += '<option value="EL CHAGUALO">EL CHAGUALO</option>';
+            Vereda_options_str  += '<option value="EL CHAMIZO">EL CHAMIZO</option>';
+            Vereda_options_str  += '<option value="EL CHAQUIRO">EL CHAQUIRO</option>';
+            Vereda_options_str  += '<option value="EL CHOCHO">EL CHOCHO</option>';
+            Vereda_options_str  += '<option value="EL CONGO">EL CONGO</option>';
+            Vereda_options_str  += '<option value="EL ESPINAL">EL ESPINAL</option>';
+            Vereda_options_str  += '<option value="EL FILO">EL FILO</option>';
+            Vereda_options_str  += '<option value="EL GUADUAL">EL GUADUAL</option>';
+            Vereda_options_str  += '<option value="EL GUAYABO">EL GUAYABO</option>';
+            Vereda_options_str  += '<option value="EL HATO">EL HATO</option>';
+            Vereda_options_str  += '<option value="EL HORMIGUERO">EL HORMIGUERO</option>';
+            Vereda_options_str  += '<option value="EL LLANO">EL LLANO</option>';
+            Vereda_options_str  += '<option value="EL LLANO - YOLOMBAL">EL LLANO - YOLOMBAL</option>';
+            Vereda_options_str  += '<option value="EL MORO">EL MORO</option>';
+            Vereda_options_str  += '<option value="EL PEÑOL">EL PEÑOL</option>';
+            Vereda_options_str  += '<option value="EL PLACER">EL PLACER</option>';
+            Vereda_options_str  += '<option value="EL PROGRESO">EL PROGRESO</option>';
+            Vereda_options_str  += '<option value="EL PUEBLITO">EL PUEBLITO</option>';
+            Vereda_options_str  += '<option value="EL QUINCE">EL QUINCE</option>';
+            Vereda_options_str  += '<option value="EL RANO">EL RANO</option>';
+            Vereda_options_str  += '<option value="EL RESPALDO">EL RESPALDO</option>';
+            Vereda_options_str  += '<option value="EL RETIRO">EL RETIRO</option>';
+            Vereda_options_str  += '<option value="EL ROBLE">EL ROBLE</option>';
+            Vereda_options_str  += '<option value="EL RUANO">EL RUANO</option>';
+            Vereda_options_str  += '<option value="EL SAUCE">EL SAUCE</option>';
+            Vereda_options_str  += '<option value="EL SOCORRO">EL SOCORRO</option>';
+            Vereda_options_str  += '<option value="EL TAMBO">EL TAMBO</option>';
+            Vereda_options_str  += '<option value="EL TIGRE">EL TIGRE</option>';
+            Vereda_options_str  += '<option value="EL TOPACIO">EL TOPACIO</option>';
+            Vereda_options_str  += '<option value="EL VALLE">EL VALLE</option>';
+            Vereda_options_str  += '<option value="EL VERGEL">EL VERGEL</option>';
+            Vereda_options_str  += '<option value="EL YUYAL">EL YUYAL</option>';
+            Vereda_options_str  += '<option value="EL ZANCUDO">EL ZANCUDO</option>';
+            Vereda_options_str  += '<option value="ENCENILLOS">ENCENILLOS</option>';
+            Vereda_options_str  += '<option value="ESPIRITU SANTO">ESPIRITU SANTO</option>';
+            Vereda_options_str  += '<option value="FILO DE LOS PEREZ">FILO DE LOS PEREZ</option>';
+            Vereda_options_str  += '<option value="FILO DEL MEDIO">FILO DEL MEDIO</option>';
+            Vereda_options_str  += '<option value="FILO GRANDE">FILO GRANDE</option>';
+            Vereda_options_str  += '<option value="GUANACAS">GUANACAS</option>';
+            Vereda_options_str  += '<option value="GUANAQUITAS">GUANAQUITAS</option>';
+            Vereda_options_str  += '<option value="GUASIMO">GUASIMO</option>';
+            Vereda_options_str  += '<option value="HOYO RICO">HOYO RICO</option>';
+            Vereda_options_str  += '<option value="IBORRA">IBORRA</option>';
+            Vereda_options_str  += '<option value="JOSE MARIA CORDOBA">JOSE MARIA CORDOBA</option>';
+            Vereda_options_str  += '<option value="LA ALDEA">LA ALDEA</option>';
+            Vereda_options_str  += '<option value="LA AMOLADORA">LA AMOLADORA</option>';
+            Vereda_options_str  += '<option value="LA APRETEL">LA APRETEL</option>';
+            Vereda_options_str  += '<option value="LA ARGENTINA">LA ARGENTINA</option>';
+            Vereda_options_str  += '<option value="LA BELLA">LA BELLA</option>';
+            Vereda_options_str  += '<option value="LA BRAMADORA">LA BRAMADORA</option>';
+            Vereda_options_str  += '<option value="LA CABAÑA">LA CABAÑA</option>';
+            Vereda_options_str  += '<option value="LA CALDA">LA CALDA</option>';
+            Vereda_options_str  += '<option value="LA CANDELARIA">LA CANDELARIA</option>';
+            Vereda_options_str  += '<option value="LA CAROLINA">LA CAROLINA</option>';
+            Vereda_options_str  += '<option value="LA CEJA">LA CEJA</option>';
+            Vereda_options_str  += '<option value="LA CEJITA">LA CEJITA</option>';
+            Vereda_options_str  += '<option value="LA CHINA">LA CHINA</option>';
+            Vereda_options_str  += '<option value="LA CHORRERA">LA CHORRERA</option>';
+            Vereda_options_str  += '<option value="LA CIENÁGA">LA CIENÁGA</option>';
+            Vereda_options_str  += '<option value="LA CLARA">LA CLARA</option>';
+            Vereda_options_str  += '<option value="LA CLARITA">LA CLARITA</option>';
+            Vereda_options_str  += '<option value="LA CONSPIRACION">LA CONSPIRACION</option>';
+            Vereda_options_str  += '<option value="LA CORDILLERA">LA CORDILLERA</option>';
+            Vereda_options_str  += '<option value="LA CUCHILLA">LA CUCHILLA</option>';
+            Vereda_options_str  += '<option value="LA CUESTA">LA CUESTA</option>';
+            Vereda_options_str  += '<option value="LA CUMBRE">LA CUMBRE</option>';
+            Vereda_options_str  += '<option value="LA EMPALIZADA">LA EMPALIZADA</option>';
+            Vereda_options_str  += '<option value="LA ESMERALDA">LA ESMERALDA</option>';
+            Vereda_options_str  += '<option value="LA ESTRELLA">LA ESTRELLA</option>';
+            Vereda_options_str  += '<option value="LA FRANCESA">LA FRANCESA</option>';
+            Vereda_options_str  += '<option value="LA FRISOLERA">LA FRISOLERA</option>';
+            Vereda_options_str  += '<option value="LA GABRIELA">LA GABRIELA</option>';
+            Vereda_options_str  += '<option value="LA GRANJA">LA GRANJA</option>';
+            Vereda_options_str  += '<option value="LA HOLANDA">LA HOLANDA</option>';
+            Vereda_options_str  += '<option value="LA ISLETA">LA ISLETA</option>';
+            Vereda_options_str  += '<option value="LA LANA">LA LANA</option>';
+            Vereda_options_str  += '<option value="LA LEJIA">LA LEJIA</option>';
+            Vereda_options_str  += '<option value="LA LOMA">LA LOMA</option>';
+            Vereda_options_str  += '<option value="LA LOMITA">LA LOMITA</option>';
+            Vereda_options_str  += '<option value="LA MARIA">LA MARIA</option>';
+            Vereda_options_str  += '<option value="LA MARIELA">LA MARIELA</option>';
+            Vereda_options_str  += '<option value="LA MATA">LA MATA</option>';
+            Vereda_options_str  += '<option value="LA MIEL">LA MIEL</option>';
+            Vereda_options_str  += '<option value="LA MINA">LA MINA</option>';
+            Vereda_options_str  += '<option value="LA MONTERA">LA MONTERA</option>';
+            Vereda_options_str  += '<option value="LA MUÑOZ">LA MUÑOZ</option>';
+            Vereda_options_str  += '<option value="LA PAILITA">LA PAILITA</option>';
+            Vereda_options_str  += '<option value="LA PALMA">LA PALMA</option>';
+            Vereda_options_str  += '<option value="LA PAVA">LA PAVA</option>';
+            Vereda_options_str  += '<option value="LA PIEDRA">LA PIEDRA</option>';
+            Vereda_options_str  += '<option value="LA PIEDRAHITA">LA PIEDRAHITA</option>';
+            Vereda_options_str  += '<option value="LA PLANTA">LA PLANTA</option>';
+            Vereda_options_str  += '<option value="LA PRADERA">LA PRADERA</option>';
+            Vereda_options_str  += '<option value="LA PRIMAVERA - CUATRO ESQUINAS">LA PRIMAVERA - CUATRO ESQUINAS</option>';
+            Vereda_options_str  += '<option value="LA PULGARINA">LA PULGARINA</option>';
+            Vereda_options_str  += '<option value="LA RUIZ">LA RUIZ</option>';
+            Vereda_options_str  += '<option value="LA SALAZAR">LA SALAZAR</option>';
+            Vereda_options_str  += '<option value="LA SIRIA">LA SIRIA</option>';
+            Vereda_options_str  += '<option value="LA TERESITA">LA TERESITA</option>';
+            Vereda_options_str  += '<option value="LA TORRE">LA TORRE</option>';
+            Vereda_options_str  += '<option value="LA UNION">LA UNION</option>';
+            Vereda_options_str  += '<option value="LA VEGA">LA VEGA</option>';
+            Vereda_options_str  += '<option value="LA VETA">LA VETA</option>';
+            Vereda_options_str  += '<option value="LA ZOORRA">LA ZOORRA</option>';
+            Vereda_options_str  += '<option value="LABORES">LABORES</option>';
+            Vereda_options_str  += '<option value="LAS ANIMAS">LAS ANIMAS</option>';
+            Vereda_options_str  += '<option value="LAS BEATRICES - LA M">LAS BEATRICES - LA M</option>';
+            Vereda_options_str  += '<option value="LAS BRISAS">LAS BRISAS</option>';
+            Vereda_options_str  += '<option value="LAS CRUCES">LAS CRUCES</option>';
+            Vereda_options_str  += '<option value="LAS MARGARITAS">LAS MARGARITAS</option>';
+            Vereda_options_str  += '<option value="LAS NIEVES">LAS NIEVES</option>';
+            Vereda_options_str  += '<option value="LAS VICTORIAS">LAS VICTORIAS</option>';
+            Vereda_options_str  += '<option value="LLANADAS">LLANADAS</option>';
+            Vereda_options_str  += '<option value="LLANO DE OVEJAS">LLANO DE OVEJAS</option>';
+            Vereda_options_str  += '<option value="LLANOS DE CUIVA">LLANOS DE CUIVA</option>';
+            Vereda_options_str  += '<option value="LOMA GRANDE">LOMA GRANDE</option>';
+            Vereda_options_str  += '<option value="LOS POMOS">LOS POMOS</option>';
+            Vereda_options_str  += '<option value="LOS SALADOS">LOS SALADOS</option>';
+            Vereda_options_str  += '<option value="MALAMBO">MALAMBO</option>';
+            Vereda_options_str  += '<option value="MALDONADO">MALDONADO</option>';
+            Vereda_options_str  += '<option value="MALLARINO">MALLARINO</option>';
+            Vereda_options_str  += '<option value="MALVAZA">MALVAZA</option>';
+            Vereda_options_str  += '<option value="MATASANOS">MATASANOS</option>';
+            Vereda_options_str  += '<option value="MEDIA LOMA">MEDIA LOMA</option>';
+            Vereda_options_str  += '<option value="MEDIA LUNA">MEDIA LUNA</option>';
+            Vereda_options_str  += '<option value="MINA VIEJA">MINA VIEJA</option>';
+            Vereda_options_str  += '<option value="MIRAFLORES">MIRAFLORES</option>';
+            Vereda_options_str  += '<option value="MOCORONGO">MOCORONGO</option>';
+            Vereda_options_str  += '<option value="MONTAÑA ADENTRO">MONTAÑA ADENTRO</option>';
+            Vereda_options_str  += '<option value="MONTAÑITA">MONTAÑITA</option>';
+            Vereda_options_str  += '<option value="MONTEBELLO">MONTEBELLO</option>';
+            Vereda_options_str  += '<option value="MONTEFRIO">MONTEFRIO</option>';
+            Vereda_options_str  += '<option value="MONTEGRANDE">MONTEGRANDE</option>';
+            Vereda_options_str  += '<option value="MONTELLIO">MONTELLIO</option>';
+            Vereda_options_str  += '<option value="MORELIA">MORELIA</option>';
+            Vereda_options_str  += '<option value="MORRON">MORRON</option>';
+            Vereda_options_str  += '<option value="MORTIÑEL">MORTIÑEL</option>';
+            Vereda_options_str  += '<option value="NEGRITO">NEGRITO</option>';
+            Vereda_options_str  += '<option value="NIQUIA">NIQUIA</option>';
+            Vereda_options_str  += '<option value="OCHALI">OCHALI</option>';
+            Vereda_options_str  += '<option value="ORO BAJO RIO GRANDE">ORO BAJO RIO GRANDE</option>';
+            Vereda_options_str  += '<option value="PALESTINA">PALESTINA</option>';
+            Vereda_options_str  += '<option value="PAN DE AZUCAR">PAN DE AZUCAR</option>';
+            Vereda_options_str  += '<option value="PANTANILLO">PANTANILLO</option>';
+            Vereda_options_str  += '<option value="PEREGRINO">PEREGRINO</option>';
+            Vereda_options_str  += '<option value="PEÑOLES">PEÑOLES</option>';
+            Vereda_options_str  += '<option value="PIEDRA GORDA">PIEDRA GORDA</option>';
+            Vereda_options_str  += '<option value="PIO XII">PIO XII</option>';
+            Vereda_options_str  += '<option value="PLAYA LARGA">PLAYA LARGA</option>';
+            Vereda_options_str  += '<option value="PLAYAS">PLAYAS</option>';
+            Vereda_options_str  += '<option value="PLAYITAS">PLAYITAS</option>';
+            Vereda_options_str  += '<option value="POPALITO">POPALITO</option>';
+            Vereda_options_str  += '<option value="PORCE">PORCE</option>';
+            Vereda_options_str  += '<option value="PORTEZUELA">PORTEZUELA</option>';
+            Vereda_options_str  += '<option value="POTRERITO">POTRERITO</option>';
+            Vereda_options_str  += '<option value="POTRERITOS">POTRERITOS</option>';
+            Vereda_options_str  += '<option value="QUEBRADA ARRIBA">QUEBRADA ARRIBA</option>';
+            Vereda_options_str  += '<option value="QUEBRADA DEL MEDIO">QUEBRADA DEL MEDIO</option>';
+            Vereda_options_str  += '<option value="QUEBRADAS SAN ANTONIO">QUEBRADAS SAN ANTONIO</option>';
+            Vereda_options_str  += '<option value="QUEBRADITAS">QUEBRADITAS</option>';
+            Vereda_options_str  += '<option value="QUEBRADONA">QUEBRADONA</option>';
+            Vereda_options_str  += '<option value="QUITASOL">QUITASOL</option>';
+            Vereda_options_str  += '<option value="RIO ABAJO">RIO ABAJO</option>';
+            Vereda_options_str  += '<option value="RIO ARRIBA">RIO ARRIBA</option>';
+            Vereda_options_str  += '<option value="RIO GRANDE">RIO GRANDE</option>';
+            Vereda_options_str  += '<option value="RIO GRANDE - BELLAVISTA">RIO GRANDE - BELLAVISTA</option>';
+            Vereda_options_str  += '<option value="RIOCHICO">RIOCHICO</option>';
+            Vereda_options_str  += '<option value="RIOGRANDE">RIOGRANDE</option>';
+            Vereda_options_str  += '<option value="ROMAZON">ROMAZON</option>';
+            Vereda_options_str  += '<option value="ROSALITO">ROSALITO</option>';
+            Vereda_options_str  += '<option value="RÍO ABAJO">RÍO ABAJO</option>';
+            Vereda_options_str  += '<option value="RÍO CHICO">RÍO CHICO</option>';
+            Vereda_options_str  += '<option value="RÍO GRANDE">RÍO GRANDE</option>';
+            Vereda_options_str  += '<option value="SABANAZO">SABANAZO</option>';
+            Vereda_options_str  += '<option value="SAMARIA">SAMARIA</option>';
+            Vereda_options_str  += '<option value="SAN ANTONIO">SAN ANTONIO</option>';
+            Vereda_options_str  += '<option value="SAN BERNARDO">SAN BERNARDO</option>';
+            Vereda_options_str  += '<option value="SAN EPIFANIO">SAN EPIFANIO</option>';
+            Vereda_options_str  += '<option value="SAN FELIPE">SAN FELIPE</option>';
+            Vereda_options_str  += '<option value="SAN FERMIN">SAN FERMIN</option>';
+            Vereda_options_str  += '<option value="SAN FRANCISCO">SAN FRANCISCO</option>';
+            Vereda_options_str  += '<option value="SAN ISIDRO">SAN ISIDRO</option>';
+            Vereda_options_str  += '<option value="SAN ISIDRO PARTE BAJA">SAN ISIDRO PARTE BAJA</option>';
+            Vereda_options_str  += '<option value="SAN JOSE">SAN JOSE</option>';
+            Vereda_options_str  += '<option value="SAN JOSE DE LA AHUMADA">SAN JOSE DE LA AHUMADA</option>';
+            Vereda_options_str  += '<option value="SAN JUAN">SAN JUAN</option>';
+            Vereda_options_str  += '<option value="SAN JULIÁN">SAN JULIÁN</option>';
+            Vereda_options_str  += '<option value="SAN MIGUEL">SAN MIGUEL</option>';
+            Vereda_options_str  += '<option value="SAN PABLO">SAN PABLO</option>';
+            Vereda_options_str  += '<option value="SAN PEDRO">SAN PEDRO</option>';
+            Vereda_options_str  += '<option value="SAN RAMON">SAN RAMON</option>';
+            Vereda_options_str  += '<option value="SAN ROQUE">SAN ROQUE</option>';
+            Vereda_options_str  += '<option value="SANTA ANA">SANTA ANA</option>';
+            Vereda_options_str  += '<option value="SANTA BARBARA">SANTA BARBARA</option>';
+            Vereda_options_str  += '<option value="SANTA GERTRUDIS">SANTA GERTRUDIS</option>';
+            Vereda_options_str  += '<option value="SANTA INES">SANTA INES</option>';
+            Vereda_options_str  += '<option value="SANTA ISABEL">SANTA ISABEL</option>';
+            Vereda_options_str  += '<option value="SANTA JUANA">SANTA JUANA</option>';
+            Vereda_options_str  += '<option value="SANTA RITA">SANTA RITA</option>';
+            Vereda_options_str  += '<option value="SANTANA">SANTANA</option>';
+            Vereda_options_str  += '<option value="SANTO DOMINGO">SANTO DOMINGO</option>';
+            Vereda_options_str  += '<option value="SIN _INFORMACION">SIN _INFORMACION</option>';
+            Vereda_options_str  += '<option value="TENCHE">TENCHE</option>';
+            Vereda_options_str  += '<option value="TESORERO">TESORERO</option>';
+            Vereda_options_str  += '<option value="TIERRA FRIA">TIERRA FRIA</option>';
+            Vereda_options_str  += '<option value="TOBON">TOBON</option>';
+            Vereda_options_str  += '<option value="TORURO">TORURO</option>';
+            Vereda_options_str  += '<option value="TRAVESIAS">TRAVESIAS</option>';
+            Vereda_options_str  += '<option value="VAINILLAL - PACHO HONDO">VAINILLAL - PACHO HONDO</option>';
+            Vereda_options_str  += '<option value="VALLECITOS">VALLECITOS</option>';
+            Vereda_options_str  += '<option value="VENTANAS">VENTANAS</option>';
+            Vereda_options_str  += '<option value="VENTIADERO">VENTIADERO</option>';
+            Vereda_options_str  += '<option value="VERBENAL">VERBENAL</option>';
+            Vereda_options_str  += '<option value="VEREDA POLEAL">VEREDA POLEAL</option>';
+            Vereda_options_str  += '<option value="VIZCAYA">VIZCAYA</option>';
+            Vereda_options_str  += '<option value="VOLADOR">VOLADOR</option>';
+            Vereda_options_str  += '<option value="YARUMALITO">YARUMALITO</option>';
+            Vereda_options_str  += '<option value="YARUMITO">YARUMITO</option>';
+            Vereda_options_str  += '<option value="YERBABUENA">YERBABUENA</option>';
+            Vereda_options_str  += '<option value="ZAFRA">ZAFRA</option>';
+            Vereda_options_str  += '<option value="ZANCUDITO">ZANCUDITO</option>';
+            Vereda_options_str  += '<option value="ZAPATILLO">ZAPATILLO</option>';
+            Vereda_options_str  += '<option value="ZARZAL LA LUZ">ZARZAL LA LUZ</option>';
+            sel_Vereda.innerHTML = Vereda_options_str;
+            div_Vereda.appendChild(sel_Vereda);
+            var lab_Vereda = document.createElement('div');
+            lab_Vereda.innerHTML = 'Vereda';
+            lab_Vereda.className = 'filterlabel';
+            div_Vereda.appendChild(lab_Vereda);
+            var reset_Vereda = document.createElement('div');
+            reset_Vereda.innerHTML = 'clear filter';
+            reset_Vereda.className = 'filterlabel';
+            reset_Vereda.onclick = function() {
+                var options = document.getElementById("sel_Vereda").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Vereda.appendChild(reset_Vereda);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Asociado = document.createElement('div');
+            div_Asociado.id = "div_Asociado";
+            div_Asociado.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Asociado);
+            sel_Asociado = document.createElement('select');
+            sel_Asociado.multiple = true;
+            sel_Asociado.size = 2;
+            sel_Asociado.id = "sel_Asociado";
+            var Asociado_options_str = "<option value='' unselected></option>";
+            sel_Asociado.onchange = function(){filterFunc()};
+            Asociado_options_str  += '<option value="NULL">NULL</option>';
+            Asociado_options_str  += '<option value="Colanta">Colanta</option>';
+            sel_Asociado.innerHTML = Asociado_options_str;
+            div_Asociado.appendChild(sel_Asociado);
+            var lab_Asociado = document.createElement('div');
+            lab_Asociado.innerHTML = 'Asociado';
+            lab_Asociado.className = 'filterlabel';
+            div_Asociado.appendChild(lab_Asociado);
+            var reset_Asociado = document.createElement('div');
+            reset_Asociado.innerHTML = 'clear filter';
+            reset_Asociado.className = 'filterlabel';
+            reset_Asociado.onclick = function() {
+                var options = document.getElementById("sel_Asociado").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Asociado.appendChild(reset_Asociado);
+        L.ImageOverlay.include({
+            getBounds: function () {
+                return this._bounds;
+            }
+        });
+        </script>
+    </body>
+</html>
